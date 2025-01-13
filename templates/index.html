@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Traffic Light System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .controls {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin: 0 10px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .start-btn {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .stop-btn {
+            background-color: #f44336;
+            color: white;
+        }
+
+        .junction-display {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .lane {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .traffic-light {
+            width: 60px;
+            height: 150px;
+            background-color: #333;
+            border-radius: 10px;
+            padding: 10px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .light {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #666;
+        }
+
+        .active-red { background-color: #ff0000; }
+        .active-yellow { background-color: #ffff00; }
+        .active-green { background-color: #00ff00; }
+
+        .status-panel {
+            text-align: center;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Smart Traffic Light Control System</h1>
+        </div>
+
+        <div class="controls">
+            <button class="button start-btn" onclick="startSystem()">Start System</button>
+            <button class="button stop-btn" onclick="stopSystem()">Stop System</button>
+            <button class="button simulation-btn" onclick="startSimulation()" style="background-color: #2196F3;">Launch Simulation</button>
+            <button class="button simulation-stop-btn" onclick="stopSimulation()" style="background-color: #FF5722;">Stop Simulation</button>
+        </div>
+
+        <div class="junction-display">
+            <div class="lane" id="lane1">
+                <h2>Lane 1</h2>
+                <div class="traffic-light">
+                    <div class="light" id="red1"></div>
+                    <div class="light" id="yellow1"></div>
+                    <div class="light" id="green1"></div>
+                </div>
+            </div>
+            <div class="lane" id="lane2">
+                <h2>Lane 2</h2>
+                <div class="traffic-light">
+                    <div class="light" id="red2"></div>
+                    <div class="light" id="yellow2"></div>
+                    <div class="light" id="green2"></div>
+                </div>
+            </div>
+            <div class="lane" id="lane3">
+                <h2>Lane 3</h2>
+                <div class="traffic-light">
+                    <div class="light" id="red3"></div>
+                    <div class="light" id="yellow3"></div>
+                    <div class="light" id="green3"></div>
+                </div>
+            </div>
+            <div class="lane" id="lane4">
+                <h2>Lane 4</h2>
+                <div class="traffic-light">
+                    <div class="light" id="red4"></div>
+                    <div class="light" id="yellow4"></div>
+                    <div class="light" id="green4"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="status-panel">
+            <h2>System Status</h2>
+            <p>Active Lane: <span id="active-lane">-</span></p>
+            <p>Timer: <span id="timer">-</span> seconds</p>
+            <p>Traffic Density: <span id="density">-</span>%</p>
+        </div>
+    </div>
+
+    <script>
+        function updateLights(activeLane, status) {
+            // Reset all lights
+            for (let i = 1; i <= 4; i++) {
+                document.getElementById(`red${i}`).className = 'light';
+                document.getElementById(`yellow${i}`).className = 'light';
+                document.getElementById(`green${i}`).className = 'light';
+            }
+
+            // Set active light for current lane
+            if (activeLane > 0) {
+                const lightElement = document.getElementById(`${status.toLowerCase()}${activeLane}`);
+                lightElement.className = `light active-${status.toLowerCase()}`;
+            }
+        }
+
+        function updateStatus() {
+            fetch('/status')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('active-lane').textContent = data.active_lane;
+                    document.getElementById('timer').textContent = data.timer;
+                    document.getElementById('density').textContent = data.density;
+                    updateLights(data.active_lane, data.light_status);
+                });
+        }
+
+        function startSystem() {
+            fetch('/start')
+                .then(response => response.json())
+                .then(data => console.log('System started'));
+        }
+
+        function stopSystem() {
+            fetch('/stop')
+                .then(response => response.json())
+                .then(data => console.log('System stopped'));
+        }
+
+        function startSimulation() {
+            fetch('/simulation')
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Simulation started');
+                    document.querySelector('.simulation-btn').disabled = true;
+                    document.querySelector('.simulation-stop-btn').disabled = false;
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        function stopSimulation() {
+            fetch('/stop_simulation')
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Simulation stopped');
+                    document.querySelector('.simulation-btn').disabled = false;
+                    document.querySelector('.simulation-stop-btn').disabled = true;
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        // Update status every second
+        setInterval(updateStatus, 1000);
+    </script>
+</body>
+</html> 
