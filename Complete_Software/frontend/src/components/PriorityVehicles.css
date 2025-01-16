@@ -1,0 +1,51 @@
+.priority-vehicles {
+    padding: 20px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    color: #666;
+}
+
+input, select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1em;
+}
+
+button {
+    background: #2196F3;
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background 0.3s;
+}
+
+button:hover {
+    background: #1976D2;
+}
+
+.error-message {
+    color: #f44336;
+    margin-top: 5px;
+    font-size: 0.9em;
+}
+
+.success-message {
+    color: #4CAF50;
+    margin-top: 5px;
+    font-size: 0.9em;
+} 
